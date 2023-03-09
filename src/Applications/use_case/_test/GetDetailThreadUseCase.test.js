@@ -88,7 +88,7 @@ describe('getDetailThreadUseCase', () => {
           username: 'dicoding',
           date: '2001',
           content: '**komentar telah dihapus**',
-          likeCount: 0,
+          likeCount: 1,
           replies: [
             {
               id: 'reply-2',
