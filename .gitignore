@@ -5,4 +5,5 @@ config/database/test.json
 coverage
 .env
 coverage
+.eslintrc.json
 forum-api.pem
