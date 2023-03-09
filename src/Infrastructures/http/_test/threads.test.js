@@ -436,6 +436,7 @@ describe('/threads endpoint', () => {
       expect(responseJson.data.thread.comments[0].username).toBeDefined();
       expect(responseJson.data.thread.comments[0].date).toBeDefined();
       expect(responseJson.data.thread.comments[0].content).toBeDefined();
+      expect(responseJson.data.thread.comments[0].likeCount).toBeDefined();
       expect(responseJson.data.thread.comments[0].replies[0].id).toBeDefined();
       expect(responseJson.data.thread.comments[0].replies[0].username).toBeDefined();
       expect(responseJson.data.thread.comments[0].replies[0].date).toBeDefined();
