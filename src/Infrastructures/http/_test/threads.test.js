@@ -8,6 +8,7 @@ const LoginTestHelper = require('../../../../tests/LoginTestHelper');
 const AuthenticationsTableTestHelper = require('../../../../tests/AuthenticationsTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
+const LikeTableTestHelper = require('../../../../tests/LikeTableTestHelper');
 
 describe('/threads endpoint', () => {
   afterAll(async () => {
@@ -20,6 +21,7 @@ describe('/threads endpoint', () => {
     await ThreadsTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await RepliesTableTestHelper.cleanTable();
+    await LikeTableTestHelper.cleanTable();
   });
 
   describe('when POST /threads', () => {
@@ -750,6 +752,53 @@ describe('/threads endpoint', () => {
       const response = await server.inject({
         method: 'DELETE',
         url: '/threads/thread-123/comments/comment-123/replies/reply-123',
+        headers: {
+          Authorization: `Bearer ${user.accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+  });
+
+  describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {
+    it('should response 401 when request headers not contain token', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const user = await LoginTestHelper.getToken(server);
+      await ThreadsTableTestHelper.addThread({ owner: user.id });
+      await CommentsTableTestHelper.addComment({ owner: user.id });
+
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-123/comments/comment-123/likes',
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(responseJson.statusCode).toEqual(401);
+      expect(responseJson.error).toEqual('Unauthorized');
+      expect(responseJson.message).toEqual('Missing authentication');
+    });
+
+    it('should response with 200 when like comment', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const user = await LoginTestHelper.getToken(server);
+      await ThreadsTableTestHelper.addThread({ owner: user.id });
+      await CommentsTableTestHelper.addComment({ owner: user.id });
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-123/comments/comment-123/likes',
         headers: {
           Authorization: `Bearer ${user.accessToken}`,
         },
