@@ -16,5 +16,36 @@ class LikeRepositoryPostgres extends LikeRepository {
 
     await this._pool.query(query);
   }
+
+  async dislikeComment(commentId, owner) {
+    const query = {
+      text: 'DELETE FROM likes WHERE comment_id = $1 AND owner = $2',
+      values: [commentId, owner],
+    };
+
+    await this._pool.query(query);
+  }
+
+  async verifyIsCommentLikeOrDislike(commentId, owner) {
+    const query = {
+      text: 'SELECT * FROM likes WHERE comment_id = $1 AND owner = $2',
+      values: [commentId, owner],
+    };
+
+    const { rowCount } = await this._pool.query(query);
+    if (!rowCount) return false;
+
+    return true;
+  }
+
+  async getLikesByCommentId(commentId) {
+    const query = {
+      text: 'SELECT COUNT(*) FROM likes where comment_id = $1',
+      values: [commentId],
+    };
+
+    const { rows } = await this._pool.query(query);
+    return Number(rows[0].count);
+  }
 }
 module.exports = LikeRepositoryPostgres;
