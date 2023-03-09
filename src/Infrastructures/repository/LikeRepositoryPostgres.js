@@ -10,7 +10,7 @@ class LikeRepositoryPostgres extends LikeRepository {
   async likeComment(commentId, owner) {
     const id = `like-${this._idGenerator()}`;
     const query = {
-      text: 'INSERT INTO replies VALUES($1, $2, $3)',
+      text: 'INSERT INTO likes VALUES($1, $2, $3)',
       values: [id, commentId, owner],
     };
 
