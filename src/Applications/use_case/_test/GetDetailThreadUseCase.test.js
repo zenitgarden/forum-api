@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const DetailComment = require('../../../Domains/comments/entities/DetailComment');
+const LikeRepository = require('../../../Domains/likes/LikeRepository');
 const ReplyRepository = require('../../../Domains/replies/ReplyRepository');
 const DetailReply = require('../../../Domains/replies/entities/DetailReply');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
@@ -72,6 +73,7 @@ describe('getDetailThreadUseCase', () => {
           username: 'human',
           date: '2000',
           content: 'hello',
+          likeCount: 1,
           replies: [
             {
               id: 'reply-1',
@@ -86,6 +88,7 @@ describe('getDetailThreadUseCase', () => {
           username: 'dicoding',
           date: '2001',
           content: '**komentar telah dihapus**',
+          likeCount: 0,
           replies: [
             {
               id: 'reply-2',
@@ -102,6 +105,7 @@ describe('getDetailThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRepository();
+    const mockLikeRepository = new LikeRepository();
 
     // Mocking needed function
     mockThreadRepository.getDetailThread = jest.fn()
@@ -110,12 +114,15 @@ describe('getDetailThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(comments));
     mockReplyRepository.getRepliesByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(replies));
+    mockLikeRepository.getLikesByCommentId = jest.fn()
+      .mockImplementation(() => Promise.resolve(1));
 
     // Create use case instance
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      likeRepository: mockLikeRepository,
     });
 
     // Action
