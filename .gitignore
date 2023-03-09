@@ -4,5 +4,5 @@ package-lock.json
 config/database/test.json
 coverage
 .env
-coverage
 forum-api.pem
+.eslintrc.json
