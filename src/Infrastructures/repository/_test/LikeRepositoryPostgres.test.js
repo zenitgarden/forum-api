@@ -25,6 +25,7 @@ describe('LikeRepositoryPostgres ', () => {
   const fakeIdGenerator = () => '123'; // stub!
   const likeRepositoryPostgres = new LikeRepositoryPostgres(pool, fakeIdGenerator);
   const commentId = 'comment-123';
+  const commentIds = ['comment-123'];
   const owner = 'user-123';
 
   describe('likeComment function', () => {
@@ -73,14 +74,12 @@ describe('LikeRepositoryPostgres ', () => {
     it('should return like count correctly', async () => {
       // Arrange
       await LikesTableTestHelper.addLike({ id: 'like-123' });
-      await LikesTableTestHelper.addLike({ id: 'like-1234' });
-      await LikesTableTestHelper.addLike({ id: 'like-1235' });
 
       // Action
-      const likeCount = await likeRepositoryPostgres.getLikesByCommentId(commentId);
+      const likeCount = await likeRepositoryPostgres.getLikesByCommentId(commentIds);
 
       // Assert
-      expect(likeCount).toEqual(3);
+      expect(likeCount).toHaveLength(1);
     });
   });
 });
