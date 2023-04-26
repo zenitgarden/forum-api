@@ -14,7 +14,7 @@ class GetDetailThreadUseCase {
     const comments = await this._commentRepository.getCommentsByThreadId(useCasePayload.threadId);
     const replies = await this._replyRepository.getRepliesByThreadId(useCasePayload.threadId);
     thread.comments = await this.getLikesForEachComment(comments);
-    thread.comments = this.getRepliesForEachComment(comments, replies);
+    thread.comments = this.getRepliesForEachComment(thread.comments, replies);
     return thread;
   }
 
@@ -32,9 +32,16 @@ class GetDetailThreadUseCase {
   }
 
   async getLikesForEachComment(commentsPayload) {
-    return Promise.all(commentsPayload.map(async (comment) => {
-      comment.likeCount = await this._likeRepository.getLikesByCommentId(comment.id);
-    }));
+    // ---- Hindari query dalam proses looping karena query merupakan proses yang cukup "mahal" ----
+    // return Promise.all(commentsPayload.map(async (comment) => {
+    //   comment.likeCount = await this._likeRepository.getLikesByCommentId(comment.id);
+    // }));
+    const commentIds = commentsPayload.map((comment) => comment.id);
+    const likesPayload = await this._likeRepository.getLikesByCommentId(commentIds);
+    return commentsPayload.map((comment) => {
+      const likes = likesPayload.filter((like) => like.commentId === comment.id);
+      return { ...comment, likeCount: Number(likes.length) };
+    });
   }
 }
 module.exports = GetDetailThreadUseCase;

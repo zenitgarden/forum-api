@@ -62,6 +62,24 @@ describe('getDetailThreadUseCase', () => {
       }),
     ];
 
+    const likes = [
+      {
+        id: 'like-1',
+        commentId: 'comment-1',
+        owner: 'user-123',
+      },
+      {
+        id: 'like-2',
+        commentId: 'comment-2',
+        owner: 'user-123',
+      },
+      {
+        id: 'like-3',
+        commentId: 'comment-2',
+        owner: 'user-123',
+      },
+    ];
+
     const expectedCommentsAndReplies = {
       id: 'thread-123',
       title: 'new title',
@@ -89,7 +107,7 @@ describe('getDetailThreadUseCase', () => {
           username: 'dicoding',
           date: '2001',
           content: '**komentar telah dihapus**',
-          likeCount: 1,
+          likeCount: 2,
           replies: [
             {
               id: 'reply-2',
@@ -116,7 +134,7 @@ describe('getDetailThreadUseCase', () => {
     mockReplyRepository.getRepliesByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(replies));
     mockLikeRepository.getLikesByCommentId = jest.fn()
-      .mockImplementation(() => Promise.resolve(1));
+      .mockImplementation(() => Promise.resolve(likes));
 
     // Create use case instance
     const getDetailThreadUseCase = new GetDetailThreadUseCase({

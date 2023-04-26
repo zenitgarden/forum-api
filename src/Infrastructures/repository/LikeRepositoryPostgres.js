@@ -40,12 +40,12 @@ class LikeRepositoryPostgres extends LikeRepository {
 
   async getLikesByCommentId(commentId) {
     const query = {
-      text: 'SELECT COUNT(*) FROM likes where comment_id = $1',
+      text: 'SELECT likes.comment_id as "commentId", likes.id, likes.owner FROM likes where comment_id = ANY($1::text[])',
       values: [commentId],
     };
 
     const { rows } = await this._pool.query(query);
-    return Number(rows[0].count);
+    return rows;
   }
 }
 module.exports = LikeRepositoryPostgres;
